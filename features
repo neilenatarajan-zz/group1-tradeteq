@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[8]:
+
+
+
+import pickle
+import pandas as pd
+
+
+#loads file
+datafolder = "/Users/chaiqifei/Documents/Group Project/"
+filename = "file.pkl"
+with open(datafolder+filename, "rb") as fle:
+  df = pickle.load(fle)
+
+
+# In[47]:
+
+
+from IPython.display import display
+pd.options.display.max_columns = None
+df.head()
+
+
+# In[24]:
+
+
+#keep only those companies whose T0 status is active
+df = df[df['CompanyStatus_T0']=='Active']
+import numpy as np
+#isolate target outcome - company credit status at time T1
+target = np.array(df['class_1'])
+
+
+# In[73]:
+
+
+features = df[['CompanyNumber', 'RegAddressPostCode',
+        'CountryOfOrigin','MortgagesNumMortCharges',
+       'MortgagesNumMortOutstanding', 'MortgagesNumMortPartSatisfied', 'LimitedPartnershipsNumGenPartners',
+       'LimitedPartnershipsNumLimPartners',  'SIC1',
+       'eCompanyCategory', 'eCompanyStatus',
+       'eAccountsAccountCategory', 'dIncorporationDate',
+       'dAccountsNextDueDate',
+       'dReturnsNextDueDate','dConfStmtNextDueDate','namechanged', 'namechanged2']].copy()
+#Remove the rows with missing data 
+features.dropna(how='any',inplace=True)
+#Create new features(periods)
+T0 = 2018+(31+28)/365
+T1 = 2019+(31+28)/365
+features['dAccountsOutstandingTime'] = T0-features['dAccountsNextDueDate']
+features['dConfStmtOutstandingTime'] = T0-features['dConfStmtNextDueDate']
+features['dReturnsOutstandingTime'] = T0-features['dReturnsNextDueDate']
+features['OperatingTime'] = T1-features['dIncorporationDate']
+features.loc[features['dAccountsOutstandingTime']<0, 'dAccountsOutstandingTime'] = 0 
+features.loc[features['dConfStmtOutstandingTime']<0, 'dConfStmtOutstandingTime'] = 0 
+features.loc[features['dReturnsOutstandingTime']<0, 'dReturnsOutstandingTime'] = 0
+features.drop(['dAccountsNextDueDate','dConfStmtNextDueDate','dReturnsNextDueDate','dIncorporationDate'],axis = 1,inplace = True)
+feature.head()
+
+
+# In[60]:
+
+
+features['dConfStmtOutstandingTime'].value_counts()
+
+
+# In[61]:
+
+
+features['CountryOfOrigin'].value_counts()
+
+
+# In[62]:
+
+
+features['LimitedPartnershipsNumGenPartners'].value_counts()
+
+
+# In[63]:
+
+
+features['eCompanyStatus'].value_counts()
+
+
+# In[72]:
+
+
+features['LimitedPartnershipsNumLimPartners'].value_counts()
+
+
+# In[74]:
+
+
+features['dAccountsOutstandingTime'].value_counts()
+
+
+# In[75]:
+
+
+features.drop(['dConfStmtOutstandingTime','CountryOfOrigin','LimitedPartnershipsNumGenPartners','LimitedPartnershipsNumLimPartners','eCompanyStatus'],axis = 1,inplace = True)
+
+
+# In[76]:
+
+
+features
