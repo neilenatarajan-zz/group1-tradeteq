@@ -29,24 +29,27 @@ df.head()
 
 #keep only those companies whose T0 status is active
 df = df[df['CompanyStatus_T0']=='Active']
-import numpy as np
-#isolate target outcome - company credit status at time T1
-target = np.array(df['class_1'])
 
 
 # In[73]:
 
 
-features = df[['CompanyNumber', 'RegAddressPostCode',
+features = df[['CompanyNumber', 'oa11',
         'CountryOfOrigin','MortgagesNumMortCharges',
        'MortgagesNumMortOutstanding', 'MortgagesNumMortPartSatisfied', 'LimitedPartnershipsNumGenPartners',
        'LimitedPartnershipsNumLimPartners',  'SIC1',
        'eCompanyCategory', 'eCompanyStatus',
        'eAccountsAccountCategory', 'dIncorporationDate',
        'dAccountsNextDueDate',
-       'dReturnsNextDueDate','dConfStmtNextDueDate','namechanged', 'namechanged2']].copy()
+       'dReturnsNextDueDate','dConfStmtNextDueDate','namechanged', 'namechanged2', 'class_1']].copy()
 #Remove the rows with missing data 
 features.dropna(how='any',inplace=True)
+
+import numpy as np
+#isolate target outcome - company credit status at time T1
+target = np.array(df['class_1'])
+features = features.drop('class_1', axis=1)
+
 #Create new features(periods)
 T0 = 2018+(31+28)/365
 T1 = 2019+(31+28)/365
@@ -58,7 +61,7 @@ features.loc[features['dAccountsOutstandingTime']<0, 'dAccountsOutstandingTime']
 features.loc[features['dConfStmtOutstandingTime']<0, 'dConfStmtOutstandingTime'] = 0 
 features.loc[features['dReturnsOutstandingTime']<0, 'dReturnsOutstandingTime'] = 0
 features.drop(['dAccountsNextDueDate','dConfStmtNextDueDate','dReturnsNextDueDate','dIncorporationDate'],axis = 1,inplace = True)
-feature.head()
+features.head()
 
 
 # In[60]:
@@ -107,3 +110,5 @@ features.drop(['dConfStmtOutstandingTime','CountryOfOrigin','LimitedPartnerships
 
 
 features
+
+features = np.array(features)
