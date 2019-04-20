@@ -1,3 +1,6 @@
+# Ignore the pickle file
+co_T0_T1_toshare.pkl
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
