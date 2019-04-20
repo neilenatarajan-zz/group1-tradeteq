@@ -1,5 +1,7 @@
 # Ignore the pickle file
 co_T0_T1_toshare.pkl
+co_T0_T1_toshare.csv
+OAtoMinorityData.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
